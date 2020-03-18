@@ -35,6 +35,7 @@ class ChandaKatha(models.Model):
 
     def __str__(self):
         return self.title
+
     def category_name(self):
         return self.category.name
 
@@ -43,8 +44,3 @@ class ChandaKatha(models.Model):
 
     def division_name(self):
         return self.district.division.name
-
-
-
-
-

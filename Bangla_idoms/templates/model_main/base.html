@@ -62,60 +62,84 @@
 
 <div class="container" id="app">
     <table>
-         <form>
+        <form>
 
-               <div class="col-md-3">
-                    <div class="form-group">
+            <div class="col-md-3">
+                <div class="form-group">
                     <label for="exampleFormControlSelect1">Division select</label>
-                    <select v-model="form_data.division" class="form-control" id="exampleFormControlSelect1"  @change="getDistricts()">
-                        <option  v-for="division in divisions" :key="division.id" v-bind:value="division.id">
+                    <select v-model="form_data.division" class="form-control" id="exampleFormControlSelect1"
+                            @change="getDistricts()">
+                        <option value=""></option>
+                        <option v-for="division in divisions" :key="division.id" :value="division.id">
                             [[division.name]]
                         </option>
                     </select>
                 </div>
-               </div>
+            </div>
 
-             <div class="col-md-3">
-                 <div class="form-group">
+            <div class="col-md-3">
+                <div class="form-group">
                     <label for="exampleFormControlSelect1">District select</label>
-                    <select class="form-control" id="exampleFormControlSelect2" >
-                        <option  v-for="district in districts" :key="district.id">
+                    <select v-model="form_data.district" class="form-control" id="exampleFormControlSelect2">
+                        <option value=""></option>
+                        <option v-for="district in districts" :key="district.id" :value="district.id">
                             [[district.name]]
                         </option>
                     </select>
                 </div>
 
-             </div>
+            </div>
 
-             <div class="col-md-3">
-                 <div class="form-group">
+            <div class="col-md-3">
+                <div class="form-group">
                     <label for="exampleFormControlSelect1">Category select</label>
-                    <select class="form-control" id="exampleFormControlSelect3" >
-                        <option  v-for="category in categories" :key="category.id">
+                    <select v-model="form_data.category" class="form-control" id="exampleFormControlSelect3">
+                        <option value=""></option>
+                        <option v-for="category in categories" :key="category.id" :value="category.id">
                             [[category.name]]
                         </option>
                     </select>
                 </div>
 
 
-             </div>
-              <br>
-             <div class="col-md-3">
-                 <div class="form-group">
-                     <button class="btn btn-primary">Search</button>
-                 </div>
-             </div>
+            </div>
+            <br>
+            <div class="col-md-3">
+                <div class="form-group">
+                    <button class="btn btn-primary" type="submit" @click="getData()">Search</button>
+                </div>
+            </div>
+
+            <table >
+  <tr>
+    <th>Id</th>
+    <th>Name</th>
+    <th>Country</th>
+  </tr>
+  <tr   v-for="result in output" :key="result.id">
+    <td>[[result.id]]</td>
+    <td>[[result.title]]</td>
+    <td>[[result.category__name]]</td>
+  </tr>
+
+</table>
 
 
 
 
-            </form>
+
+
+
+
+
+
+
+        </form>
 
 
     </table>
     <br>
     <hr>
-
 
 
 </div>
@@ -131,15 +155,28 @@
         el: '#app',
         delimiters: ['[[', ']]'],
         data: {
-            message: 'Tajal o Vue!',
             divisions: [],
             categories: [],
-            districts:[],
-            form_data:{
-                division:null,
-                district:null,
-                category:null
-            }
+            districts: [],
+            output:[],
+            form_data: {
+                division: '',
+                district: '',
+                category: ''
+            },
+            perPage: 3,
+        currentPage: 1,
+        items: [
+          { id: 1, first_name: 'Fred', last_name: 'Flintstone' },
+          { id: 2, first_name: 'Wilma', last_name: 'Flintstone' },
+          { id: 3, first_name: 'Barney', last_name: 'Rubble' },
+          { id: 4, first_name: 'Betty', last_name: 'Rubble' },
+          { id: 5, first_name: 'Pebbles', last_name: 'Flintstone' },
+          { id: 6, first_name: 'Bamm Bamm', last_name: 'Rubble' },
+          { id: 7, first_name: 'The Great', last_name: 'Gazzoo' },
+          { id: 8, first_name: 'Rockhead', last_name: 'Slate' },
+          { id: 9, first_name: 'Pearl', last_name: 'Slaghoople' }
+        ]
         },
 
 
@@ -147,21 +184,40 @@
 
             axios.get('http://127.0.0.1:8000/api/data')
                 .then(response => {
-                        this.divisions = response.data.division,
-                            this.categories = response.data.category
+                    this.divisions = response.data.division,
+                        this.categories = response.data.category
                 })
+            this.getData()
         },
-        methods:{
-            getDistricts(){
-                  axios.get('http://127.0.0.1:8000/api/district?division='+this.form_data.division)
-                .then(response => {
+        methods: {
+            getDistricts() {
+                axios.get('http://127.0.0.1:8000/api/district?division=' + this.form_data.division)
+                    .then(response => {
                         this.districts = response.data.district
 
 
-                })
+                    })
+
+            },
+            getData() {
+                axios.get('http://127.0.0.1:8000/api/chandaKatha?division=' + this.form_data.division
+                    + '&district=' + this.form_data.district + '&category=' + this.form_data.category)
+                    .then(response => {
+                        this.output = response.data.chandaKatha
+
+
+
+
+
+                    })
 
             }
-        }
+        },
+        computed: {
+      rows() {
+        return this.items.length
+      }
+    }
 
     })
 

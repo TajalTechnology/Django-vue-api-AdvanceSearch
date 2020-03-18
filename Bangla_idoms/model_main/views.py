@@ -12,7 +12,7 @@ def api_data(request):
     data = {
         'division': list(Division.objects.values()),
         'category': list(Category.objects.values()),
-        'chandaKatha': list(ChandaKatha.objects.values())
+        # 'chandaKatha': list(ChandaKatha.objects.values())
 
     }
     return JsonResponse(data, safe=False)
@@ -33,14 +33,19 @@ def api_district(request):
 
 def api_chandaKatha(request):
     queryAll = ChandaKatha.objects
-    if request.GET.get('chandakatha'):
-        queryAll = queryAll.filter(category=request.GET.get('chandakatha'))
+    if request.GET.get('category'):
+        queryAll = queryAll.filter(category=request.GET.get('category'))
     if request.GET.get('district'):
         queryAll = queryAll.filter(district=request.GET.get('district'))
+    if request.GET.get('division'):
+        queryAll = queryAll.filter(district_id=request.GET.get('division'))
 
-    queryAll = queryAll.values()
-    queryAll = {
-        'queryAll': list(queryAll)
+    chandaKatha = queryAll.values('id', 'title', 'category_id', 'district_id', 'district__division_id',
+                                  'category__name',
+                                  'district__division__name', 'district__name')
+
+    data2 = {
+        'chandaKatha': list(chandaKatha)
 
     }
-    return JsonResponse(queryAll, safe=False)
+    return JsonResponse(data2, safe=False)
